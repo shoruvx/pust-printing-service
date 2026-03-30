@@ -1,10 +1,17 @@
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
 class FileService {
   Future<List<String>> pickFiles() async {
-    List<String>? paths = await FilePicker.platform.pickFiles(multithreaded: true, allowMultiple: true);
-    return paths?.map((path) => path.toString()).toList() ?? [];
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+    );
+    if (result != null) {
+      return result.files
+          .map((file) => file.path ?? '')
+          .where((path) => path.isNotEmpty)
+          .toList();
+    }
+    return [];
   }
 
   void deleteFile(String filePath) {

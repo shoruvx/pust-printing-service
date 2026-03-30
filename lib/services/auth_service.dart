@@ -8,7 +8,7 @@ class AuthService {
     // Store user credentials securely
     await _storage.write(key: 'username', value: username);
     await _storage.write(key: 'password', value: password);
-    print('User signed up: $$username');
+    print('User signed up: $username');
   }
 
   Future<void> login(String username, String password) async {
@@ -17,10 +17,10 @@ class AuthService {
     String? storedUsername = await _storage.read(key: 'username');
     String? storedPassword = await _storage.read(key: 'password');
     if (storedUsername == username && storedPassword == password) {
-      print('User logged in: $$username');
+      print('User logged in: $username');
       // Proceed to set session or token
     } else {
-      print('Login failed for user: $$username');
+      print('Login failed for user: $username');
     }
   }
 

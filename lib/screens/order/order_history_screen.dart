@@ -1,57 +1,77 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'order_bloc.dart'; // Import your BLoC for orders
 
-class OrderHistoryScreen extends StatelessWidget {
+class OrderHistoryScreen extends StatefulWidget {
+  const OrderHistoryScreen({Key? key}) : super(key: key);
+
+  @override
+  State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
+}
+
+class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
+  bool _isLoading = false;
+  final List<Map<String, dynamic>> _orders = [];
+  String _sortBy = 'Date';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOrders();
+  }
+
+  Future<void> _loadOrders() async {
+    setState(() => _isLoading = true);
+    // TODO: Replace with actual API call to load orders
+    await Future.delayed(const Duration(milliseconds: 500));
+    setState(() => _isLoading = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order History'),
+        title: const Text('Order History'),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
-              showSearch(context: context, delegate: OrderSearchDelegate());
+              showSearch(
+                context: context,
+                delegate: _OrderSearchDelegate(_orders),
+              );
             },
           ),
         ],
       ),
-      body: BlocBuilder<OrderBloc, OrderState>(
-        builder: (context, state) {
-          if (state is OrderLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is OrderLoaded) {
-            final orders = state.orders;
-            return Column(
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
               children: [
-                _buildFilterSortOptions(context),
+                _buildFilterSortOptions(),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: orders.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('Order #${orders[index].id}'),
-                        subtitle: Text('Date: ${orders[index].date}'),
-                      );
-                    },
-                  ),
+                  child: _orders.isEmpty
+                      ? const Center(child: Text('No orders found.'))
+                      : ListView.builder(
+                          itemCount: _orders.length,
+                          itemBuilder: (context, index) {
+                            final order = _orders[index];
+                            return ListTile(
+                              title: Text('Order #${order['id']}'),
+                              subtitle: Text('Date: ${order['date']}'),
+                            );
+                          },
+                        ),
                 ),
               ],
-            );
-          } else {
-            return Center(child: Text('Failed to load orders.'));
-          }
-        },
-      ),
+            ),
     );
   }
 
-  Widget _buildFilterSortOptions(BuildContext context) {
+  Widget _buildFilterSortOptions() {
     return Row(
       children: [
         Expanded(
           child: DropdownButton<String>(
+            value: _sortBy,
             items: <String>['Date', 'Status'].map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -59,9 +79,11 @@ class OrderHistoryScreen extends StatelessWidget {
               );
             }).toList(),
             onChanged: (String? newValue) {
-              // Call your filter function here
+              if (newValue != null) {
+                setState(() => _sortBy = newValue);
+              }
             },
-            hint: Text('Sort by'),
+            hint: const Text('Sort by'),
           ),
         ),
       ],
@@ -69,15 +91,17 @@ class OrderHistoryScreen extends StatelessWidget {
   }
 }
 
-class OrderSearchDelegate extends SearchDelegate {
+class _OrderSearchDelegate extends SearchDelegate {
+  final List<Map<String, dynamic>> orders;
+
+  _OrderSearchDelegate(this.orders);
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
+        icon: const Icon(Icons.clear),
+        onPressed: () => query = '',
       ),
     ];
   }
@@ -85,22 +109,20 @@ class OrderSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
-      onPressed: () {
-        close(context, null);
-      },
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () => close(context, null),
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    // Implement search results
-    return Container(); // Replace with search result display
+    // TODO: Implement search result display
+    return Container();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // Provide suggestions based on query
-    return Container(); // Replace with suggestions logic
+    // TODO: Implement search suggestions based on query
+    return Container();
   }
 }

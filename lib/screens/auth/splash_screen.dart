@@ -1,1 +1,37 @@
-import 'package:flutter/material.dart';\n\nclass SplashScreen extends StatefulWidget {\n  @override\n  _SplashScreenState createState() => _SplashScreenState();\n}\n\nclass _SplashScreenState extends State<SplashScreen> {\n  @override\n  void initState() {\n    super.initState();\n    checkUserLoginStatus();\n  }\n\n  void checkUserLoginStatus() async {\n    // Simulate an authentication check\n    await Future.delayed(Duration(seconds: 2)); // Simulating a network call\n    bool isLoggedIn = false; // Replace with actual login status check\n\n    if (isLoggedIn) {\n      Navigator.pushReplacementNamed(context, '/home'); // Navigate to home if logged in\n    } else {\n      Navigator.pushReplacementNamed(context, '/login'); // Navigate to login if not logged in\n    }\n  }\n\n  @override\n  Widget build(BuildContext context) {\n    return Scaffold(\n      body: Center(\n        child: CircularProgressIndicator(), // Show loading indicator while checking login status\n      ),\n    );\n  }\n}
+import 'package:flutter/material.dart';
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _checkUserLoginStatus();
+  }
+
+  Future<void> _checkUserLoginStatus() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+    // TODO: Replace with actual login status check
+    final bool isLoggedIn = false;
+    if (isLoggedIn) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      Navigator.pushReplacementNamed(context, '/login');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+}

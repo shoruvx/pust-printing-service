@@ -12,7 +12,11 @@ class OrderProvider with ChangeNotifier {
 
   // Function to track an order by its ID
   Order? trackOrder(String orderId) {
-    return _orders.firstWhere((order) => order.id == orderId, orElse: () => null);
+    try {
+      return _orders.firstWhere((order) => order.id == orderId);
+    } catch (_) {
+      return null;
+    }
   }
 
   // Function to view all orders
