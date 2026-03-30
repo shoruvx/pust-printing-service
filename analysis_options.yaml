@@ -1,0 +1,9 @@
+# analysis_options.yaml
+
+# Flutter linter rules and code quality settings
+
+include: package:flutter_lints/flutter.yaml
+
+# Custom linter rules can be added below
+# lint:
+#   - a_linter_rule
