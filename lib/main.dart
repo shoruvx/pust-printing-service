@@ -1,38 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'config/app_routes.dart';
+import 'config/app_theme.dart';
+import 'providers/auth_provider.dart';
+import 'providers/order_provider.dart';
+import 'providers/token_provider.dart';
+import 'providers/profile_provider.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const PustPrintingServiceApp());
 }
 
-class MyApp extends StatelessWidget {
+class PustPrintingServiceApp extends StatelessWidget {
+  const PustPrintingServiceApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => TokenProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+      ],
+      child: MaterialApp(
+        title: 'PUST Printing Service',
+        theme: AppTheme.lightTheme,
+        debugShowCheckedModeBanner: false,
+        home: Consumer<AuthProvider>(
+          builder: (context, authProvider, _) {
+            if (authProvider.isLoggedIn) {
+              return const HomeScreen();
+            } else {
+              return const LoginScreen();
+            }
+          },
+        ),
+        routes: AppRoutes.routes,
       ),
-      home: SplashScreen(),
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Navigate to home screen after splash
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: CircularProgressIndicator()),
     );
   }
 }
