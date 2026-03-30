@@ -1,0 +1,15 @@
+# Flutter/Dart
+
+# Directory for build output
+build/
+
+# Dart tool
+.dart_tool/
+
+# IDE files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vs/
+*.sublime-*
