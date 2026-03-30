@@ -6,6 +6,8 @@ import 'providers/auth_provider.dart';
 import 'providers/order_provider.dart';
 import 'providers/token_provider.dart';
 import 'providers/profile_provider.dart';
+import 'screens/home/home_screen.dart';
+import 'screens/auth/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
