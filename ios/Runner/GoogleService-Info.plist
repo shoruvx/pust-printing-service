@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCDWxh9QmRFFBafAdo5CwDXYr4pL3zXwYE</string>
+	<key>GCM_SENDER_ID</key>
+	<string>160543732289</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.pustPrintingService</string>
+	<key>PROJECT_ID</key>
+	<string>pust-printing-service</string>
+	<key>STORAGE_BUCKET</key>
+	<string>pust-printing-service.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:160543732289:ios:70ca2a9b6aed8cab234cc0</string>
+</dict>
+</plist>

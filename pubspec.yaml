@@ -14,9 +14,15 @@ dependencies:
     sdk: flutter
   provider: ^6.0.4
   dio: ^5.1.0
-  file_picker: ^4.7.0
+  file_picker: ^10.3.10
   shared_preferences: ^2.0.11
-  flutter_local_notifications: ^13.0.0
+  uuid: ^4.5.3
+  intl: ^0.20.2
+  google_fonts: ^8.0.2
+  firebase_core: ^4.7.0
+  firebase_auth: ^6.4.0
+  cloud_firestore: ^6.3.0
+  image_picker: ^1.1.2
   # Add any other required packages here as needed.
 
 flutter:

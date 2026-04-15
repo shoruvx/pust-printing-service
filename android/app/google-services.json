@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "160543732289",
+    "project_id": "pust-printing-service",
+    "storage_bucket": "pust-printing-service.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160543732289:android:654760c62cb000d4234cc0",
+        "android_client_info": {
+          "package_name": "com.example.pust_printing_service"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByauWQgHuUpefLSwQQmwgNIz_sZvaA6DI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

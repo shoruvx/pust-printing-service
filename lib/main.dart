@@ -1,46 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'config/app_routes.dart';
-import 'config/app_theme.dart';
-import 'providers/auth_provider.dart';
-import 'providers/order_provider.dart';
-import 'providers/token_provider.dart';
-import 'providers/profile_provider.dart';
-import 'screens/home/home_screen.dart';
-import 'screens/auth/login_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'services/storage_service.dart';
+import 'services/app_state.dart';
+import 'screens/splash_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const PustPrintingServiceApp());
+  
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  
+  // Initialize storage service
+  final storageService = await StorageService.init();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState(storageService)),
+      ],
+      child: const PrintQueueApp(),
+    ),
+  );
 }
 
-class PustPrintingServiceApp extends StatelessWidget {
-  const PustPrintingServiceApp({Key? key}) : super(key: key);
+class PrintQueueApp extends StatelessWidget {
+  const PrintQueueApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => OrderProvider()),
-        ChangeNotifierProvider(create: (_) => TokenProvider()),
-        ChangeNotifierProvider(create: (_) => ProfileProvider()),
-      ],
-      child: MaterialApp(
-        title: 'PUST Printing Service',
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        home: Consumer<AuthProvider>(
-          builder: (context, authProvider, _) {
-            if (authProvider.isLoggedIn) {
-              return const HomeScreen();
-            } else {
-              return const LoginScreen();
-            }
-          },
-        ),
-        routes: AppRoutes.routes,
-      ),
+    return MaterialApp(
+      title: 'PrintQueue',
+      theme: AppTheme.darkTheme, // Use the new dark theme
+      debugShowCheckedModeBanner: false,
+      home: const SplashScreen(),
     );
   }
 }
