@@ -1,4 +1,4 @@
-# 📄 PUST PrintQueue — User Manual
+# 📄 PUST PUST Printing Service — User Manual
 
 <p align="center">
   <img src="assets/pust_logo.png" width="120" alt="PUST Logo"/>
@@ -14,7 +14,7 @@
     <img src="https://img.shields.io/github/v/release/shoruvx/pust-printing-service?label=Latest%20Release&style=for-the-badge&color=800000&logo=android" alt="Latest Release"/>
   </a>
   &nbsp;
-  <a href="https://github.com/shoruvx/pust-printing-service/releases/download/v1.0.0/PUST-PrintQueue-v1.0.apk">
+  <a href="https://github.com/shoruvx/pust-printing-service/releases/download/v1.0.0/PUST-PUST Printing Service-v1.0.apk">
     <img src="https://img.shields.io/badge/Download-APK%20v1.0-brightgreen?style=for-the-badge&logo=android" alt="Download APK"/>
   </a>
   &nbsp;
@@ -29,12 +29,12 @@
 
 ### ⬇️ Direct Download (Android)
 
-**[→ Click here to download PUST-PrintQueue-v1.0.apk](https://github.com/shoruvx/pust-printing-service/releases/download/v1.0.0/PUST-PrintQueue-v1.0.apk)**
+**[→ Click here to download PUST-PUST Printing Service-v1.0.apk](https://github.com/shoruvx/pust-printing-service/releases/download/v1.0.0/PUST-PUST Printing Service-v1.0.apk)**
 
 1. Tap the link above on your Android device (or scan a QR code to the releases page).
 2. Go to **Settings → Security → Install Unknown Apps** and allow your browser/file manager.
 3. Open the downloaded `.apk` file and tap **Install**.
-4. Launch **PrintQueue** from your app drawer.
+4. Launch **PUST Printing Service** from your app drawer.
 
 > ⚠️ You need to enable "Install from unknown sources" the first time only.
 

@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
     <application
-        android:label="pust_printing_service"
+        android:label="PUST Printing Service"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

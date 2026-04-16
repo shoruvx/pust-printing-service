@@ -1,10 +1,10 @@
-# PrintQueue Mobile Application - Lab Report
+# PUST Printing Service Mobile Application - Lab Report
 
 ## 1. Introduction
 
-This lab report documents the design, development, and implementation of PrintQueue, a mobile application built using Flutter and Dart. PrintQueue is a student-facing printing service management application developed for university students to place print orders, track their order status in real time, and manage their printing history from their smartphones.
+This lab report documents the design, development, and implementation of PUST Printing Service, a mobile application built using Flutter and Dart. PUST Printing Service is a student-facing printing service management application developed for university students to place print orders, track their order status in real time, and manage their printing history from their smartphones.
 
-The app was developed as part of the Mobile Application Development lab course, focusing on real-world problem solving. Students in universities often face difficulties managing print jobs at campus printing centers, including long waits, no order tracking, and lack of communication. PrintQueue solves this by digitizing the entire process.
+The app was developed as part of the Mobile Application Development lab course, focusing on real-world problem solving. Students in universities often face difficulties managing print jobs at campus printing centers, including long waits, no order tracking, and lack of communication. PUST Printing Service solves this by digitizing the entire process.
 
 ## 2. Objectives
 
@@ -34,7 +34,7 @@ The primary objectives of this project were:
 
 ## 4. App Architecture
 
-The PrintQueue application follows a layered architecture pattern with clear separation of concerns. The project structure is organized into the following layers:
+The PUST Printing Service application follows a layered architecture pattern with clear separation of concerns. The project structure is organized into the following layers:
 
 ### 4.1 Project Structure
 
@@ -64,7 +64,7 @@ The PrintQueue application follows a layered architecture pattern with clear sep
 The app implements a complete authentication system tailored for university students. New users register using their Full Name, Roll Number, Registration Number, Phone Number, and Password. Existing users log in using their Roll Number and Password. Passwords are hashed before storage using a simple hash function. User sessions are persisted locally so the user remains logged in after closing the app.
 
 ### 5.2 Daily Token Generation System
-One of the core features of PrintQueue is the automatic token generation system. Every time a student places a new order, the system generates a short token number in the format T001, T002, T003, and so on. The counter resets to T001 every new day at midnight, ensuring that tokens remain short and easy to reference. The token is prominently displayed on screen after order placement and can be copied to the clipboard.
+One of the core features of PUST Printing Service is the automatic token generation system. Every time a student places a new order, the system generates a short token number in the format T001, T002, T003, and so on. The counter resets to T001 every new day at midnight, ensuring that tokens remain short and easy to reference. The token is prominently displayed on screen after order placement and can be copied to the clipboard.
 
 ### 5.3 File Selection & Configuration
 Students can pick multiple files from their device storage using the FilePicker package. Supported formats include PDF, DOCX, XLSX, PPTX, JPG, and PNG. For each selected file, the student can configure the following options:
@@ -105,7 +105,7 @@ The Profile screen displays the student's full details including their name, rol
 
 ## 7. Data Flow Diagram
 
-The following describes the flow of data in the PrintQueue application:
+The following describes the flow of data in the PUST Printing Service application:
 
 1. User launches the app. SplashScreen checks SharedPreferences for a saved session.
 2. If a session exists, the user is taken to HomeScreen. Otherwise, they are redirected to LoginScreen.
@@ -118,7 +118,7 @@ The following describes the flow of data in the PrintQueue application:
 
 ## 8. Results & Output
 
-The PrintQueue application was successfully developed and tested on both Chrome (web) and Android (Samsung Galaxy M35). The following screens were implemented and verified:
+The PUST Printing Service application was successfully developed and tested on both Chrome (web) and Android (Samsung Galaxy M35). The following screens were implemented and verified:
 
 | Screen | Status | Notes |
 | :--- | :--- | :--- |
@@ -135,7 +135,7 @@ The PrintQueue application was successfully developed and tested on both Chrome 
 
 ## 9. Discussion
 
-The development of PrintQueue provided valuable hands-on experience with the Flutter framework and the Dart programming language. Key learning outcomes from this project include:
+The development of PUST Printing Service provided valuable hands-on experience with the Flutter framework and the Dart programming language. Key learning outcomes from this project include:
 
 *   Understanding of Flutter's widget tree and the difference between Stateful and Stateless widgets
 *   Practical implementation of the Provider package for state management across multiple screens
@@ -150,7 +150,7 @@ One challenge encountered during development was the CardTheme vs CardThemeData 
 
 ## 10. Conclusion
 
-The PrintQueue application was successfully designed and developed as a complete student-facing mobile application for managing printing service orders. The app demonstrates the practical application of Flutter framework concepts including state management, local persistence, file picking, navigation, animations, and form validation.
+The PUST Printing Service application was successfully designed and developed as a complete student-facing mobile application for managing printing service orders. The app demonstrates the practical application of Flutter framework concepts including state management, local persistence, file picking, navigation, animations, and form validation.
 
 The project meets all stated objectives: students can register with their university credentials, place print orders by selecting files from their device, receive a daily-resetting token number, track their order status with estimated delivery time, and receive in-app notifications. The app runs on both Android devices and web browsers without any platform-specific code changes, demonstrating Flutter's cross-platform capability.
 

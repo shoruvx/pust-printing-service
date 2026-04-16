@@ -22,18 +22,18 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AppState(storageService)),
       ],
-      child: const PrintQueueApp(),
+      child: const PUSTPrintingServiceApp(),
     ),
   );
 }
 
-class PrintQueueApp extends StatelessWidget {
-  const PrintQueueApp({Key? key}) : super(key: key);
+class PUSTPrintingServiceApp extends StatelessWidget {
+  const PUSTPrintingServiceApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PrintQueue',
+      title: 'PUST Printing Service',
       theme: AppTheme.darkTheme, // Use the new dark theme
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
