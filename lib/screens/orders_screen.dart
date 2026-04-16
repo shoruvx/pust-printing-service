@@ -4,7 +4,6 @@ import '../../services/app_state.dart';
 import '../../models/models.dart';
 import '../../widgets/common.dart';
 import 'order_detail_screen.dart';
-import 'package:intl/intl.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({Key? key}) : super(key: key);
@@ -44,43 +43,60 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('My Orders'),
+        title: const Text('My Orders', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
         backgroundColor: Colors.transparent,
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Active'),
-            Tab(text: 'All'),
-            Tab(text: 'Done'),
-          ],
-        ),
+        automaticallyImplyLeading: false, // Don't allow back since we use bottom nav
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchCtrl,
-              decoration: InputDecoration(
-                hintText: 'Search by token...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchQuery.isNotEmpty 
-                  ? IconButton(icon: const Icon(Icons.clear), onPressed: () {
-                      _searchCtrl.clear();
-                      setState(() => _searchQuery = '');
-                    })
-                  : null,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
-              onChanged: (val) => setState(() => _searchQuery = val),
+              child: TextField(
+                controller: _searchCtrl,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Search by token...',
+                  hintStyle: const TextStyle(color: Colors.white),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white),
+                  suffixIcon: _searchQuery.isNotEmpty 
+                    ? IconButton(icon: const Icon(Icons.clear, color: Colors.white), onPressed: () {
+                        _searchCtrl.clear();
+                        setState(() => _searchQuery = '');
+                      })
+                    : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                ),
+                onChanged: (val) => setState(() => _searchQuery = val),
+              ),
             ),
           ),
+          TabBar(
+            controller: _tabController,
+            indicatorColor: Theme.of(context).primaryColor,
+            labelColor: Theme.of(context).primaryColor,
+            unselectedLabelColor: Colors.white,
+            dividerColor: Colors.white10,
+            tabs: [
+              Tab(text: 'Active (${active.length})'),
+              Tab(text: 'All (${searched.length})'),
+              Tab(text: 'Done (${done.length})'),
+            ],
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: [
-                RefreshIndicator(onRefresh: () async {}, child: _buildList(active)),
-                RefreshIndicator(onRefresh: () async {}, child: _buildList(searched)),
-                RefreshIndicator(onRefresh: () async {}, child: _buildList(done)),
+                _buildList(active),
+                _buildList(searched),
+                _buildList(done),
               ],
             ),
           ),
@@ -90,36 +106,25 @@ class _OrdersScreenState extends State<OrdersScreen> with SingleTickerProviderSt
   }
 
   Widget _buildList(List<PrintOrder> items) {
-    if (items.isEmpty) return const Center(child: Text('No orders found.'));
+    if (items.isEmpty) return const Center(child: Text('No orders found.', style: TextStyle(color: Colors.white)));
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
       itemCount: items.length,
       itemBuilder: (context, i) {
         final order = items[i];
-        return GlassCard(
-          padding: EdgeInsets.zero,
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(order.token, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-                StatusBadge(status: order.status),
-              ],
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                Text('${order.files.length} Files • BDT ${order.totalPrice.toStringAsFixed(2)}'),
-                const SizedBox(height: 4),
-                Text(DateFormat('MMM dd, yyyy - hh:mm a').format(order.createdAt), style: const TextStyle(fontSize: 12)),
-              ],
-            ),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(order: order)));
-            },
-          ),
+        if (i == items.length - 1) {
+           return Padding(
+             padding: const EdgeInsets.only(bottom: 100), // padding for floaty nav
+             child: OrderListTile(order: order, onTap: () {
+               Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(order: order)));
+             }),
+           );
+        }
+        return OrderListTile(
+          order: order,
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(order: order)));
+          },
         );
       },
     );

@@ -16,37 +16,121 @@ class DashboardScreen extends StatelessWidget {
     final List<PrintOrder> activeOrders = state.orders.where(
       (o) => o.status != OrderStatus.delivered && o.status != OrderStatus.cancelled
     ).toList();
+    final List<PrintOrder> recentOrders = state.orders.take(5).toList();
+
+    int totalDelivered = state.orders.where((o) => o.status == OrderStatus.delivered).length;
+    double totalSpent = state.orders.fold(0.0, (sum, o) => sum + o.totalPrice);
     
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Hi, ${user?.fullName.split(' ').first ?? 'Student'}'),
-        centerTitle: false, // More modern left-aligned greeting
-      ),
+      backgroundColor: Colors.transparent,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Active Orders', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              if (activeOrders.isEmpty)
-                const Center(child: Padding(padding: EdgeInsets.all(32.0), child: Text("No active orders.")))
-              else
-                ...activeOrders.map((order) => _buildOrderCard(context, order)).toList(),
-              
-              const SizedBox(height: 32),
-              
-              const Text('Quick Stats', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              // Header Row
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: _buildStatCard(context, "Total Orders", "${state.orders.length}", Icons.print)),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildStatCard(context, "Pending", "${activeOrders.length}", Icons.hourglass_top)),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Hello, ${user?.fullName.split(' ').first ?? 'Student'} 👋',
+                        style: const TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'PUST Printing Service',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today, size: 14, color: Colors.white),
+                        const SizedBox(width: 6),
+                        Text(
+                          DateFormat('dd MMM yyyy').format(DateTime.now()),
+                          style: const TextStyle(fontSize: 12, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
+
+              // Active Orders Pill
+              if (activeOrders.isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8, height: 8,
+                        decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        '${activeOrders.length} active orders in progress',
+                        style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              if (activeOrders.isNotEmpty) const SizedBox(height: 16),
+
+              // Hero Latest Order Card
+              if (state.orders.isNotEmpty)
+                _buildHeroOrderCard(context, state.orders.first),
+
+              const SizedBox(height: 24),
+
+              // Quick Stats Row
+              Row(
+                children: [
+                  Expanded(child: StatCard(title: 'Total', value: '${state.orders.length}', icon: Icons.receipt_long)),
+                  const SizedBox(width: 12),
+                  Expanded(child: StatCard(title: 'Delivered', value: '$totalDelivered', icon: Icons.check_circle_outline)),
+                  const SizedBox(width: 12),
+                  Expanded(child: StatCard(title: 'Spent', value: '৳${totalSpent.toStringAsFixed(0)}', icon: Icons.payments_outlined, valueColor: Colors.orangeAccent)),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // Recent Orders Section
+              const Padding(
+                padding: EdgeInsets.only(left: 4, bottom: 12),
+                child: Text(
+                  'RECENT ORDERS',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5, color: Colors.white),
+                ),
+              ),
+              if (recentOrders.isEmpty)
+                const Center(child: Padding(padding: EdgeInsets.all(32.0), child: Text("No orders yet.")))
+              else
+                ...recentOrders.map((o) => OrderListTile(
+                  order: o,
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(order: o))),
+                )).toList(),
+                
+              const SizedBox(height: 100), // padding for floaty nav bar
             ],
           ),
         ),
@@ -54,14 +138,12 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderCard(BuildContext context, PrintOrder order) {
+  Widget _buildHeroOrderCard(BuildContext context, PrintOrder order) {
     return GlassCard(
       padding: EdgeInsets.zero,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(order: order)));
-        },
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(order: order))),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -69,67 +151,52 @@ class DashboardScreen extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.receipt_long, color: Theme.of(context).primaryColor, size: 24),
-                      const SizedBox(width: 12),
-                      Text(order.token, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                      const Text('Latest Order', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      Text(
+                        order.token,
+                        style: const TextStyle(fontSize: 42, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 2),
+                      ),
                     ],
                   ),
                   StatusBadge(status: order.status),
                 ],
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: Divider(),
-              ),
+              const SizedBox(height: 24),
               OrderProgressBar(activeIndex: order.status.index),
-              if (order.status != OrderStatus.delivered && order.status != OrderStatus.cancelled) ...[
-                const SizedBox(height: 16),
-                OrderETADisplay(order: order),
-              ],
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: Divider(),
+              const SizedBox(height: 24),
+              // Bottom status bar inside card
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.04),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _heroStatItem(Icons.folder_shared_outlined, '${order.files.length} files'),
+                    _heroStatItem(Icons.content_copy, '${order.files.fold<int>(0, (sum, f) => sum + f.copies)} copies'),
+                    _heroStatItem(Icons.access_time, _getShortEtaText(order.status)),
+                  ],
+                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('${order.files.length} Files', style: const TextStyle(fontSize: 16, color: Color(0xFF94A3B8))),
-                  Text('BDT ${order.totalPrice.toStringAsFixed(2)}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.white)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(Icons.access_time, size: 14, color: Color(0xFF94A3B8)),
-                  const SizedBox(width: 4),
-                  Text(
-                    DateFormat('MMM dd, yyyy - hh:mm a').format(order.createdAt),
-                    style: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                  ),
-                 ],
-               ),
-              // Quick cancel while pending only
+              // Optional quick cancel right in the hero card if it's pending
               if (order.status == OrderStatus.pending) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent, size: 18),
-                    label: const Text('Cancel Order', style: TextStyle(color: Colors.redAccent, fontSize: 13)),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.redAccent, width: 1),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
+                const SizedBox(height: 16),
+                Center(
+                  child: TextButton.icon(
                     onPressed: () async {
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (ctx) => AlertDialog(
                           title: const Text('Cancel Order?'),
-                          content: Text('Cancel order ${order.token}? This cannot be undone.'),
+                          content: Text('Cancel order ${order.token}?'),
                           actions: [
                             TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Keep')),
                             TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Cancel', style: TextStyle(color: Colors.red))),
@@ -140,9 +207,11 @@ class DashboardScreen extends StatelessWidget {
                         context.read<AppState>().cancelOrder(order.id);
                       }
                     },
+                    icon: const Icon(Icons.cancel_outlined, color: Colors.white, size: 16),
+                    label: const Text('Cancel Request', style: TextStyle(color: Colors.white, fontSize: 13)),
                   ),
                 ),
-              ],
+              ]
             ],
           ),
         ),
@@ -150,36 +219,20 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon) {
-    return GlassCard(
-      padding: EdgeInsets.zero,
-      margin: EdgeInsets.zero,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () {},
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(icon, size: 28, color: Theme.of(context).primaryColor),
-                ),
-                const SizedBox(height: 16),
-                Text(value, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: Colors.white)),
-                const SizedBox(height: 4),
-                Text(title, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14, fontWeight: FontWeight.w500)),
-              ],
-            ),
-          ),
-        ),
-      ),
+  Widget _heroStatItem(IconData icon, String label) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.white),
+        const SizedBox(width: 6),
+        Text(label, style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.w500)),
+      ],
     );
+  }
+  
+  String _getShortEtaText(OrderStatus status) {
+    if (status == OrderStatus.pending) return 'Waiting...';
+    if (status == OrderStatus.printing) return 'Ready soon';
+    if (status == OrderStatus.readyForPickup) return 'Ready now';
+    return 'Done';
   }
 }

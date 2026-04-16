@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import '../../models/models.dart';
 import '../../services/app_state.dart';
 import '../../widgets/common.dart';
@@ -45,7 +46,6 @@ class ProfileScreen extends StatelessWidget {
     );
 
     if (source == null) return;
-
     final picked = await picker.pickImage(source: source, imageQuality: 80, maxWidth: 512);
     if (picked != null && context.mounted) {
       await context.read<AppState>().updateProfilePicture(picked.path);
@@ -82,97 +82,120 @@ class ProfileScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 16),
-
-              // Profile picture with edit button
-              GestureDetector(
-                onTap: () => _pickImage(context),
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      width: 110,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).primaryColor.withOpacity(0.15),
-                        border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.6), width: 2.5),
-                        image: picPath != null
-                            ? DecorationImage(image: FileImage(File(picPath)), fit: BoxFit.cover)
-                            : null,
-                      ),
-                      child: picPath == null
-                          ? Icon(Icons.person, size: 60, color: Theme.of(context).primaryColor)
-                          : null,
+              // Header Profile Info
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => _pickImage(context),
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).primaryColor.withOpacity(0.15),
+                            image: picPath != null ? DecorationImage(image: FileImage(File(picPath)), fit: BoxFit.cover) : null,
+                          ),
+                          child: picPath == null
+                              ? Center(child: Text(user.fullName[0].toUpperCase(), style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)))
+                              : null,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(color: const Color(0xFF800000), shape: BoxShape.circle, border: Border.all(color: const Color(0xFF0F172A), width: 2)),
+                          child: const Icon(Icons.camera_alt, color: Colors.white, size: 12),
+                        ),
+                      ],
                     ),
-                    // Camera badge
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF800000),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: const Color(0xFF1a1a2e), width: 2),
-                      ),
-                      child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 16),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(user.fullName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
+                        const SizedBox(height: 4),
+                        Text('Roll: ${user.rollNumber}', style: TextStyle(fontSize: 14, color: Theme.of(context).primaryColor, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 2),
+                        Text(user.phone, style: const TextStyle(fontSize: 13, color: Colors.white)),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 12),
-              Text(user.fullName, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text(user.rollNumber, style: const TextStyle(color: Colors.white54, fontSize: 14)),
               const SizedBox(height: 32),
 
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Account Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              // Stats Row
+              Row(
+                children: [
+                  Expanded(child: StatCard(title: 'Orders', value: '${state.orders.length}', icon: Icons.receipt_long)),
+                  const SizedBox(width: 12),
+                  Expanded(child: StatCard(title: 'Delivered', value: '$totalDelivered', icon: Icons.check_circle_outline)),
+                  const SizedBox(width: 12),
+                  Expanded(child: StatCard(title: 'Spent', value: '৳${totalSpent.toStringAsFixed(0)}', icon: Icons.payments_outlined, valueColor: Colors.orangeAccent)),
+                ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
+
+              const Padding(
+                padding: EdgeInsets.only(left: 4, bottom: 12),
+                child: Text('ACCOUNT DETAILS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5, color: Colors.white)),
+              ),
+
+              // Unified Account Card
               GlassCard(
-                margin: EdgeInsets.zero,
                 padding: EdgeInsets.zero,
                 child: Column(
                   children: [
-                    ListTile(onTap: () {}, leading: const Icon(Icons.numbers), title: const Text('Roll Number'), subtitle: Text(user.rollNumber)),
-                    const Divider(height: 1),
-                    ListTile(onTap: () {}, leading: const Icon(Icons.confirmation_number), title: const Text('Registration'), subtitle: Text(user.registrationNumber)),
-                    const Divider(height: 1),
-                    ListTile(onTap: () {}, leading: const Icon(Icons.phone), title: const Text('Phone Number'), subtitle: Text(user.phone)),
+                    _buildInfoTile(Icons.person_outline, 'Full Name', user.fullName),
+                    _divider(),
+                    _buildInfoTile(Icons.badge_outlined, 'Roll Number', user.rollNumber),
+                    _divider(),
+                    _buildInfoTile(Icons.numbers, 'Registration No.', user.registrationNumber),
+                    _divider(),
+                    _buildInfoTile(Icons.phone_outlined, 'Phone', user.phone),
+                    _divider(),
+                    _buildInfoTile(Icons.calendar_today_outlined, 'Member Since', DateFormat('dd MMM yyyy').format(user.memberSince)),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 32),
-
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text('Printing Statistics', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ),
-              const SizedBox(height: 16),
-              GlassCard(
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    ListTile(onTap: () {}, leading: const Icon(Icons.print), title: const Text('Total Orders Placed'), trailing: Text('${state.orders.length}', style: const TextStyle(fontSize: 18))),
-                    const Divider(height: 1),
-                    ListTile(onTap: () {}, leading: const Icon(Icons.check_circle_outline), title: const Text('Delivered Orders'), trailing: Text('$totalDelivered', style: const TextStyle(fontSize: 18))),
-                    const Divider(height: 1),
-                    ListTile(onTap: () {}, leading: const Icon(Icons.attach_money), title: const Text('Total Amount Spent'), trailing: Text('BDT ${totalSpent.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, color: Theme.of(context).primaryColor))),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 100), // floaty nav padding
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _buildInfoTile(IconData icon, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                const SizedBox(height: 4),
+                Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500)),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _divider() => Container(height: 1, color: Colors.white.withOpacity(0.05), margin: const EdgeInsets.only(left: 52, right: 16));
 }

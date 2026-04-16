@@ -101,6 +101,8 @@ class StorageService {
     await _prefs.setString(_ordersKey, jsonEncode(orders.map((o) => o.toJson()).toList()));
   }
 
+
+
   Future<void> deleteOrder(String orderId) async {
     final orders = getOrders();
     orders.removeWhere((o) => o.id == orderId);

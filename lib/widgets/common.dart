@@ -168,7 +168,7 @@ class OrderETADisplay extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.timer_outlined, color: Colors.white70, size: 16),
+            const Icon(Icons.timer_outlined, color: Colors.white, size: 16),
             const SizedBox(width: 8),
             Text(
               'Estimated Pickup: ${_getETA(order)}',
@@ -286,5 +286,101 @@ class AmbientBackground extends StatelessWidget {
         child,
       ],
     );
+  }
+}
+
+class StatCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color? valueColor;
+
+  const StatCard({
+    Key? key,
+    required this.title,
+    required this.value,
+    required this.icon,
+    this.valueColor,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      padding: const EdgeInsets.all(16.0),
+      margin: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(icon, color: Theme.of(context).primaryColor, size: 28),
+          const SizedBox(height: 16),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: valueColor ?? Colors.white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 14, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class OrderListTile extends StatelessWidget {
+  final PrintOrder order;
+  final VoidCallback onTap;
+
+  const OrderListTile({Key? key, required this.order, required this.onTap}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GlassCard(
+      padding: EdgeInsets.zero,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        onTap: onTap,
+        leading: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Icon(Icons.receipt_long, color: Colors.white, size: 24),
+        ),
+        title: Text(
+          order.token,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            letterSpacing: 1,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(
+            '${order.files.length} file(s) · ৳${order.totalPrice.toStringAsFixed(0)} · ${_formatTimeAgo(order.createdAt)}',
+            style: const TextStyle(fontSize: 13, color: Colors.white),
+          ),
+        ),
+        trailing: StatusBadge(status: order.status),
+      ),
+    );
+  }
+
+  String _formatTimeAgo(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'Just now';
   }
 }

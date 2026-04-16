@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         const Text('Order Ready! 🎉',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white)),
                         Text('Order $token is ready for pickup.',
-                            style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                            style: const TextStyle(color: Colors.white, fontSize: 13)),
                       ],
                     ),
                   ),
@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               children: [
                 Icon(
                   item.icon,
-                  color: isSelected ? Colors.white : Colors.white54,
+                  color: isSelected ? Colors.white : Colors.white,
                   size: 22,
                 ),
                 if (badge > 0)

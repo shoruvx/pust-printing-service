@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,8 +26,35 @@ class AppState extends ChangeNotifier {
       ? null
       : _storageService.getProfilePicture(_currentUser!.id);
 
+  Timer? _stuckOrderTimer;
+
   AppState(this._storageService) {
     _initSession();
+    _stuckOrderTimer = Timer.periodic(const Duration(seconds: 5), (_) => _cleanupStuckOrders());
+  }
+
+  @override
+  void dispose() {
+    _stuckOrderTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _cleanupStuckOrders() async {
+    bool changed = false;
+    final now = DateTime.now();
+    final allOrders = _storageService.getOrders();
+    for (final o in allOrders.toList()) {
+      if (o.status != OrderStatus.delivered && o.status != OrderStatus.cancelled) {
+        if (now.difference(o.createdAt).inSeconds > 30) {
+          await _storageService.deleteOrder(o.id);
+          changed = true;
+        }
+      }
+    }
+    if (changed) {
+      _loadUserData();
+      notifyListeners();
+    }
   }
 
   bool _isAuthResolved = false;

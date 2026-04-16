@@ -7,8 +7,8 @@ class AppTheme {
   static const Color backgroundSurface = Color(0xFF1E293B); // Slate 800
   static const Color primaryAccent = Color(0xFF800000); // PUST Maroon
   static const Color secondaryAccent = Color(0xFF228B22); // PUST Green
-  static const Color textPrimary = Color(0xFFF8FAFC); // Slate 50
-  static const Color textSecondary = Color(0xFF94A3B8); // Slate 400
+  static const Color textPrimary = Color(0xFFFFFFFF); // Pure White
+  static const Color textSecondary = Color(0xFFFFFFFF); // Pure White
 
   // Modern Theme Definition
   static final ThemeData darkTheme = ThemeData(

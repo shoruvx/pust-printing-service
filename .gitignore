@@ -1,15 +1,40 @@
-# Flutter/Dart
-
-# Directory for build output
-build/
-
-# Dart tool
+# Flutter
 .dart_tool/
-
-# IDE files
-.idea/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
 *.iml
+
+# Gradle
+.gradle/
+local.properties
+GeneratedPluginRegistrant.java
+
+# Android
+android/local.properties
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+
+# macOS
+macos/Pods/
+macos/.symlinks/
+
+# Firebase
+google-services.json
+GoogleService-Info.plist
+
+# IDE
+.idea/
 *.ipr
 *.iws
-.vs/
-*.sublime-*
+.vscode/
+
+# System
+.DS_Store
+*.log
+
+# Cloned test repo (not part of this project)
+Caveman-Claude/

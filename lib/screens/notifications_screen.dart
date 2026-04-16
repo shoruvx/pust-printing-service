@@ -29,7 +29,7 @@ class NotificationsScreen extends StatelessWidget {
                   const Text('Order Delivered! 🎉',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white)),
                   Text('Order $token is ready for pickup.',
-                      style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                      style: const TextStyle(color: Colors.white, fontSize: 13)),
                 ],
               ),
             ),
@@ -71,8 +71,8 @@ class NotificationsScreen extends StatelessWidget {
                   context.read<AppState>().clearAllNotifications();
                 }
               },
-              icon: const Icon(Icons.delete_sweep_rounded, size: 18, color: Colors.white70),
-              label: const Text('Clear All', style: TextStyle(color: Colors.white70, fontSize: 13)),
+              icon: const Icon(Icons.delete_sweep_rounded, size: 18, color: Colors.white),
+              label: const Text('Clear All', style: TextStyle(color: Colors.white, fontSize: 13)),
             ),
         ],
       ),
@@ -83,7 +83,7 @@ class NotificationsScreen extends StatelessWidget {
               children: const [
                 Icon(Icons.notifications_off_rounded, size: 64, color: Colors.white24),
                 SizedBox(height: 16),
-                Text('No notifications yet.', style: TextStyle(color: Colors.white54, fontSize: 16)),
+                Text('No notifications yet.', style: TextStyle(color: Colors.white, fontSize: 16)),
               ],
             ),
           )
@@ -136,11 +136,11 @@ class NotificationsScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 4),
-                        Text(notif.message, style: const TextStyle(color: Colors.white70)),
+                        Text(notif.message, style: const TextStyle(color: Colors.white)),
                         const SizedBox(height: 4),
                         Text(
                           DateFormat('MMM dd, hh:mm a').format(notif.createdAt),
-                          style: const TextStyle(color: Colors.white38, fontSize: 11),
+                          style: const TextStyle(color: Colors.white, fontSize: 11),
                         ),
                       ],
                     ),
