@@ -163,7 +163,7 @@ flutter build windows --release
 | | |
 |---|---|
 | **University** | Pabna University of Science & Technology |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **License** | MIT |
 | **GitHub** | [shoruvx/pust-printing-service](https://github.com/shoruvx/pust-printing-service) |
 
