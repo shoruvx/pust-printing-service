@@ -1,0 +1,87 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        target: [Android, Windows, macOS]
+        include:
+          - target: Android
+            os: ubuntu-latest
+            build_cmd: flutter build apk --release
+            artifact_path: build/app/outputs/flutter-apk/app-release.apk
+            asset_name: PUST-Printing-Service-Android.apk
+          - target: Windows
+            os: windows-latest
+            build_cmd: flutter build windows --release
+            artifact_path: build/windows/runner/Release/
+            asset_name: PUST-Printing-Service-Windows.zip
+          - target: macOS
+            os: macos-latest
+            build_cmd: flutter build macos --release
+            artifact_path: build/macos/Build/Products/Release/pust_printing_service.app
+            asset_name: PUST-Printing-Service-macOS.zip
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.x'
+
+      - name: Install Dependencies
+        run: flutter pub get
+
+      - name: Build Application
+        run: ${{ matrix.build_cmd }}
+
+      - name: Prepare Windows Artifact
+        if: matrix.target == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ${{ matrix.artifact_path }}* -DestinationPath ${{ matrix.asset_name }}
+
+      - name: Prepare macOS Artifact
+        if: matrix.target == 'macOS'
+        run: |
+          cd build/macos/Build/Products/Release/
+          zip -r ../../../../${{ matrix.asset_name }} pust_printing_service.app
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}-release
+          path: |
+            ${{ matrix.target == 'Android' && matrix.artifact_path || matrix.asset_name }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            Android-release/*.apk
+            Windows-release/*.zip
+            macOS-release/*.zip
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
