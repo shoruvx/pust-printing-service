@@ -10,22 +10,23 @@ jobs:
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         target: [Android, Windows, macOS]
         include:
           - target: Android
             os: ubuntu-latest
-            build_cmd: flutter build apk --release
+            build_cmd: flutter build apk --release -v
             artifact_path: build/app/outputs/flutter-apk/app-release.apk
             asset_name: PUST-Printing-Service-Android.apk
           - target: Windows
             os: windows-latest
-            build_cmd: flutter build windows --release
+            build_cmd: flutter build windows --release -v
             artifact_path: build/windows/runner/Release/
             asset_name: PUST-Printing-Service-Windows.zip
           - target: macOS
             os: macos-latest
-            build_cmd: flutter build macos --release
+            build_cmd: flutter build macos --release -v
             artifact_path: build/macos/Build/Products/Release/pust_printing_service.app
             asset_name: PUST-Printing-Service-macOS.zip
 
