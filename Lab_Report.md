@@ -2,35 +2,36 @@
 
 ## 1. Introduction
 
-This lab report documents the design, development, and implementation of PUST Printing Service, a mobile application built using Flutter and Dart. PUST Printing Service is a student-facing printing service management application developed for university students to place print orders, track their order status in real time, and manage their printing history from their smartphones.
+This lab report documents the design, development, and implementation of PUST Printing Service, a multi-platform application built using Flutter and Dart. PUST Printing Service is a student-facing printing service management application developed for university students to place print orders, track their order status in real time, and manage their printing history from their smartphones and computers.
 
-The app was developed as part of the Mobile Application Development lab course, focusing on real-world problem solving. Students in universities often face difficulties managing print jobs at campus printing centers, including long waits, no order tracking, and lack of communication. PUST Printing Service solves this by digitizing the entire process.
+The app was developed as part of the Mobile Application Development lab course, focusing on real-world problem solving. Students in universities often face difficulties managing print jobs at campus printing centers, including long waits, no order tracking, and lack of communication. PUST Printing Service solves this by digitizing the entire process across Android, iOS, macOS, Windows, and Web.
 
 ## 2. Objectives
 
 The primary objectives of this project were:
 
-*   To develop a cross-platform mobile application using the Flutter framework
+*   To develop a cross-platform application using the Flutter framework supporting Mobile (Android, iOS) and Desktop (macOS, Windows)
 *   To implement a secure user authentication system with university credentials
 *   To create an order management system with automated token generation
 *   To enable students to pick and configure files directly from their device storage
 *   To provide real-time order tracking with estimated delivery times
-*   To implement a local notification system for order status updates
-*   To design a clean, modern, and intuitive user interface
+*   To implement a notification system for order status updates
+*   To design a clean, modern, and intuitive user interface consistent across all platforms
 *   To implement persistent local data storage using SharedPreferences
 
 ## 3. Tools & Technologies Used
 
 | Tool / Technology | Version | Purpose |
 | :--- | :--- | :--- |
-| **Flutter SDK** | 3.x (Stable) | Cross-platform mobile framework |
+| **Flutter SDK** | 3.x (Stable) | Multi-platform framework |
 | **Dart** | 3.x | Programming language |
+| **Firebase** | Latest | Authentication & Firestore Database |
 | **Android Studio** | Latest | IDE for development |
 | **Provider** | ^6.1.1 | State management |
 | **SharedPreferences**| ^2.2.2 | Local data persistence |
-| **FilePicker** | ^6.1.1 | File selection from device |
+| **FilePicker** | ^6.1.1 | Multi-platform file selection |
 | **Intl** | ^0.19.0 | Date/time formatting |
-| **Chrome / Android** | Latest | Testing platforms |
+| **Platforms** | - | Android, iOS, macOS, Windows, Web |
 
 ## 4. App Architecture
 
@@ -118,7 +119,7 @@ The following describes the flow of data in the PUST Printing Service applicatio
 
 ## 8. Results & Output
 
-The PUST Printing Service application was successfully developed and tested on both Chrome (web) and Android (Samsung Galaxy M35). The following screens were implemented and verified:
+The PUST Printing Service application was successfully developed and tested on multiple platforms including Android (Samsung Galaxy M35), Web (Chrome), and Desktop (macOS/Windows). The following screens were implemented and verified across all target platforms:
 
 | Screen | Status | Notes |
 | :--- | :--- | :--- |

@@ -14,33 +14,44 @@
     <img src="https://img.shields.io/github/v/release/shoruvx/pust-printing-service?label=Latest%20Release&style=for-the-badge&color=800000&logo=android" alt="Latest Release"/>
   </a>
   &nbsp;
-  <a href="https://github.com/shoruvx/pust-printing-service/releases/download/v1.0.0/PUST-Printing-Service-v1.0.apk">
-    <img src="https://img.shields.io/badge/Download-APK%20v1.0-brightgreen?style=for-the-badge&logo=android" alt="Download APK"/>
-  </a>
-  &nbsp;
   <img src="https://img.shields.io/badge/Platform-Flutter-02569B?style=for-the-badge&logo=flutter" alt="Flutter"/>
   &nbsp;
   <img src="https://img.shields.io/badge/Backend-Firebase-FFCA28?style=for-the-badge&logo=firebase" alt="Firebase"/>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Support-Android-3DDC84?style=flat-square&logo=android" alt="Android"/>
+  <img src="https://img.shields.io/badge/Support-iOS-000000?style=flat-square&logo=apple" alt="iOS"/>
+  <img src="https://img.shields.io/badge/Support-macOS-000000?style=flat-square&logo=apple" alt="macOS"/>
+  <img src="https://img.shields.io/badge/Support-Windows-0078D4?style=flat-square&logo=windows" alt="Windows"/>
 </p>
 
 ---
 
 ## 📥 Download & Install
 
-### ⬇️ Direct Download (Android)
+### 📱 Android
+**[→ Download PUST-Printing-Service-v1.0.apk](https://github.com/shoruvx/pust-printing-service/releases/download/v1.0.0/PUST-Printing-Service-v1.0.apk)**
+1. Enable **Install from Unknown Sources** in your device settings.
+2. Download and open the `.apk` file.
+3. Follow the on-screen instructions to install.
 
-**[→ Click here to download PUST-Printing-Service-v1.0.apk](https://github.com/shoruvx/pust-printing-service/releases/download/v1.0.0/PUST-Printing-Service-v1.0.apk)**
+### 🍎 iOS
+> **Note:** iOS apps require Apple's App Store or a developer certificate for installation.
+- To run on your iPhone: Clone the repo and build using **Xcode** on a Mac.
+- [See Building from Source](#-building-from-source)
 
-1. Tap the link above on your Android device (or scan a QR code to the releases page).
-2. Go to **Settings → Security → Install Unknown Apps** and allow your browser/file manager.
-3. Open the downloaded `.apk` file and tap **Install**.
-4. Launch **PUST Printing Service** from your app drawer.
+### 💻 macOS
+**[→ Download PUST-Printing-Service-macOS.zip](https://github.com/shoruvx/pust-printing-service/releases/latest)**
+1. Download the `.zip` file and extract it.
+2. Drag **PUST Printing Service** to your **Applications** folder.
+3. Right-click and select **Open** (the first time) to bypass the "unidentified developer" warning.
 
-> ⚠️ You need to enable "Install from unknown sources" the first time only.
-
-### iOS
-
-> iOS builds require a Mac with Xcode. See [Building from Source](#-building-from-source) below.
+### 🪟 Windows
+**[→ Download PUST-Printing-Service-Windows.zip](https://github.com/shoruvx/pust-printing-service/releases/latest)**
+1. Download and extract the `.zip` file.
+2. Run `pust_printing_service.exe`.
+3. If Windows SmartScreen appears, click **More info** -> **Run anyway**.
 
 ---
 
@@ -49,8 +60,8 @@
 ### 1. Login / Sign Up
 
 - Open the app — you'll land on the **Login** screen.
-- Enter your **university email** and **password** to sign in.
-- New user? Tap **"Sign Up"** and fill in Name, Student ID, Email, and Password.
+- Enter your **university email** or **Student ID** and **password** to sign in.
+- New user? Tap **"Sign Up"** and fill in your details.
 - You'll be taken directly to the Dashboard after login.
 
 ---
@@ -72,16 +83,15 @@ Your home screen with a real-time snapshot of your printing activity.
 
 ## 🖨️ Placing a New Order
 
-1. Tap the **"+" (New Order)** button in the bottom navigation bar.
-2. **Upload your file** — tap the dropzone or select a PDF/document from your device.
+1. Tap the **"+" (New Order)** button in the navigation bar.
+2. **Upload your file** — select a PDF/document from your device.
 3. Configure your print settings:
    - **Copies** — number of copies
    - **Color Mode** — Black & White or Color
    - **Paper Size** — A4, A3, Letter, etc.
    - **Double-Sided** — toggle on/off
-4. Add **Special Instructions** (optional) — e.g., *"Staple pages"*, *"Print landscape"*.
-5. Review the **Order Summary** at the bottom (price & page count).
-6. Tap **"Place Order"** to confirm.
+4. Add **Special Instructions** (optional).
+5. Review the **Order Summary** and tap **"Place Order"**.
 
 ### 🎟️ Order Token
 After placing an order you receive a **unique daily token** (e.g., `A-01`). Show this token at the printing counter to collect your printout.
@@ -100,71 +110,38 @@ Pending ──► Printing ──► Ready for Pickup ──► Delivered
 | 🔵 **Printing** | Your document is currently being printed |
 | 🟢 **Ready for Pickup** | Printout ready — collect at the counter |
 | ✅ **Delivered** | Order collected successfully |
-| ❌ **Cancelled** | Order was cancelled before printing began |
-
-> ⚠️ Orders stuck in a non-final state for more than **30 seconds** are automatically cancelled and removed.
-
----
-
-## ❌ Cancelling an Order
-
-- You can cancel an order **only while it is in Pending status** (before printing begins).
-- Go to the **Orders** screen, find your order, and tap **Cancel**.
-- Cancelled orders are permanently removed and the token slot is freed.
-
----
-
-## 📦 Orders Screen
-
-- Tap **"Orders"** in the bottom navigation bar.
-- Use the **search bar** to filter by token (e.g., `A-01`).
-- Switch between tabs:
-  - **Active** — currently in-progress orders
-  - **All** — full history
-  - **Done** — delivered orders only
-
----
-
-## 🔔 Notifications
-
-- Tap the **bell icon** to view all notifications.
-- Notifications are sent when your order is **placed** and when it is **delivered**.
-- Tap **"Mark all read"** to clear the badge, or **"Clear All"** to remove them.
-
----
-
-## 👤 Profile
-
-| Section | Description |
-|---|---|
-| **Avatar** | Tap to upload a profile photo from your gallery |
-| **Name & Email** | Your registered university details |
-| **Student ID** | Your university ID number |
-| **Stats** | Total orders placed & total spent |
-| **Logout** | Sign out of your account |
+| ❌ **Cancelled** | Order was cancelled |
 
 ---
 
 ## 🛠️ Building from Source
 
 ### Prerequisites
-- Flutter SDK ≥ 2.17.0
-- Android Studio (for Android) / Xcode (for iOS)
-- Firebase project with Auth + Firestore enabled
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (latest stable)
+- **Android:** Android Studio + Android SDK
+- **iOS/macOS:** Mac with Xcode + CocoaPods
+- **Windows:** Visual Studio 2022 with "Desktop development with C++" workload
 
-### Android APK
+### Build Commands
+
+#### Android
 ```bash
-git clone https://github.com/shoruvx/pust-printing-service.git
-cd pust-printing-service
-flutter pub get
 flutter build apk --release
-# Output: build/app/outputs/flutter-apk/app-release.apk
 ```
 
-### iOS
+#### iOS
 ```bash
 flutter build ios --release
-# Then open ios/Runner.xcworkspace in Xcode, archive, and export
+```
+
+#### macOS
+```bash
+flutter build macos --release
+```
+
+#### Windows
+```bash
+flutter build windows --release
 ```
 
 ---
@@ -174,11 +151,10 @@ flutter build ios --release
 | Layer | Technology |
 |---|---|
 | **Framework** | Flutter (Dart) |
-| **Authentication** | Firebase Auth |
-| **Database** | Cloud Firestore |
-| **Local Storage** | SharedPreferences |
-| **UI** | Glassmorphism + PUST Maroon & Green |
-| **Fonts** | Google Fonts — Outfit |
+| **Platforms** | Android, iOS, macOS, Windows, Web |
+| **Backend** | Firebase (Auth & Firestore) |
+| **State Management** | Provider |
+| **UI Design** | Glassmorphism / Material 3 |
 
 ---
 
@@ -187,9 +163,9 @@ flutter build ios --release
 | | |
 |---|---|
 | **University** | Pabna University of Science & Technology |
-| **Platform** | Android & iOS |
 | **Version** | 1.0.0 |
 | **License** | MIT |
+| **GitHub** | [shoruvx/pust-printing-service](https://github.com/shoruvx/pust-printing-service) |
 
 ---
 
