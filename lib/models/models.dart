@@ -51,6 +51,7 @@ class PrintFile {
   final PrintColor printColor;
   final PaperSize paperSize;
   final bool isDoubleSided;
+  final int pageCount; // auto-detected page count
 
   PrintFile({
     required this.fileName,
@@ -59,11 +60,14 @@ class PrintFile {
     this.printColor = PrintColor.blackAndWhite,
     this.paperSize = PaperSize.a4,
     this.isDoubleSided = false,
+    this.pageCount = 1,
   });
 
   double get cost {
     double pricePerPage = printColor == PrintColor.color ? 5.0 : 3.0;
-    return pricePerPage * copies;
+    // For double-sided, pages are printed on both sides so cost = ceil(pages/2) per sheet
+    int effectivePages = isDoubleSided ? (pageCount / 2).ceil() : pageCount;
+    return pricePerPage * effectivePages * copies;
   }
 
   Map<String, dynamic> toJson() => {
@@ -73,6 +77,7 @@ class PrintFile {
     'printColor': printColor.index,
     'paperSize': paperSize.index,
     'isDoubleSided': isDoubleSided,
+    'pageCount': pageCount,
   };
 
   factory PrintFile.fromJson(Map<String, dynamic> json) => PrintFile(
@@ -82,6 +87,7 @@ class PrintFile {
     printColor: PrintColor.values[json['printColor']],
     paperSize: PaperSize.values[json['paperSize']],
     isDoubleSided: json['isDoubleSided'],
+    pageCount: json['pageCount'] ?? 1,
   );
 }
 

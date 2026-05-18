@@ -52,6 +52,31 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _syncProfile(BuildContext context) async {
+    final state = context.read<AppState>();
+    // Show loading snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(children: [
+          SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)),
+          SizedBox(width: 12),
+          Text('Syncing profile...'),
+        ]),
+        duration: Duration(seconds: 10),
+      ),
+    );
+    final error = await state.syncProfile();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(error == null ? '✅ Profile synced successfully!' : '❌ $error'),
+        backgroundColor: error == null ? const Color(0xFF228B22) : Colors.red.shade700,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<AppState>();
@@ -69,6 +94,12 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Profile'),
         backgroundColor: Colors.transparent,
         actions: [
+          if (state.profileIncomplete)
+            IconButton(
+              icon: const Icon(Icons.sync_rounded, color: Colors.orangeAccent),
+              tooltip: 'Sync Profile',
+              onPressed: () => _syncProfile(context),
+            ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Sign Out',
@@ -86,6 +117,41 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Profile incomplete warning banner
+              if (state.profileIncomplete)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.orangeAccent.withOpacity(0.4)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 20),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Profile data unavailable. Add SHA-1 to Firebase or tap Sync.',
+                          style: TextStyle(color: Colors.orangeAccent, fontSize: 13),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      TextButton(
+                        onPressed: () => _syncProfile(context),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.orangeAccent,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text('Sync', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+
               // Header Profile Info
               Row(
                 children: [
@@ -103,7 +169,9 @@ class ProfileScreen extends StatelessWidget {
                             image: picPath != null ? DecorationImage(image: FileImage(File(picPath)), fit: BoxFit.cover) : null,
                           ),
                           child: picPath == null
-                              ? Center(child: Text(user.fullName[0].toUpperCase(), style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)))
+                              ? Center(child: Text(
+                                  user.fullName.isNotEmpty ? user.fullName[0].toUpperCase() : '?',
+                                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)))
                               : null,
                         ),
                         Container(

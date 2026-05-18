@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:pdfx/pdfx.dart';
 import '../../services/app_state.dart';
 import '../../models/models.dart';
 import '../../widgets/common.dart';
@@ -17,21 +18,63 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
   List<PrintFile> _selectedFiles = [];
   final TextEditingController _notesCtrl = TextEditingController();
 
+
   void _pickFiles() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
       allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'png'],
+      withData: true, // load bytes so we can read PDFs on iOS without path permission issues
     );
     
     if (result != null) {
+      // Add files immediately with page count = 1 as default
       setState(() {
         for (var file in result.files) {
-          _selectedFiles.add(PrintFile(fileName: file.name, filePath: file.path ?? ''));
+          _selectedFiles.add(PrintFile(fileName: file.name, filePath: file.path ?? '', pageCount: 1));
         }
       });
+
+      // Detect page counts for PDFs using in-memory bytes
+      for (int i = 0; i < result.files.length; i++) {
+        final file = result.files[i];
+        final globalIndex = _selectedFiles.length - result.files.length + i;
+        if (file.name.toLowerCase().endsWith('.pdf')) {
+          try {
+            int pages = 1;
+            if (file.bytes != null && file.bytes!.isNotEmpty) {
+              // Use bytes to open PDF (works on iOS where path access may fail)
+              final doc = await PdfDocument.openData(file.bytes!);
+              pages = doc.pagesCount;
+              await doc.close();
+            } else if (file.path != null) {
+              // Fallback to path on other platforms
+              final doc = await PdfDocument.openFile(file.path!);
+              pages = doc.pagesCount;
+              await doc.close();
+            }
+            if (mounted && pages > 1 && globalIndex < _selectedFiles.length) {
+              setState(() {
+                final existing = _selectedFiles[globalIndex];
+                _selectedFiles[globalIndex] = PrintFile(
+                  fileName: existing.fileName,
+                  filePath: existing.filePath,
+                  copies: existing.copies,
+                  printColor: existing.printColor,
+                  paperSize: existing.paperSize,
+                  isDoubleSided: existing.isDoubleSided,
+                  pageCount: pages,
+                );
+              });
+            }
+          } catch (e) {
+            debugPrint('PDF page count error for ${file.name}: $e');
+          }
+        }
+      }
     }
   }
+
 
   void _configureFile(int index) {
     PrintFile file = _selectedFiles[index];
@@ -62,6 +105,20 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                   Text('Configure File', style: const TextStyle(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1)),
                   const SizedBox(height: 8),
                   Text(file.fileName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 8),
+                  // Page count info chip
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.4)),
+                    ),
+                    child: Text(
+                      '${file.pageCount} page${file.pageCount == 1 ? '' : 's'} detected',
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   
                   // Copies
@@ -88,8 +145,8 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                   const SizedBox(height: 12),
                   SegmentedButton<PrintColor>(
                     segments: const [
-                      ButtonSegment(value: PrintColor.blackAndWhite, label: Text('B&W (3৳)')),
-                      ButtonSegment(value: PrintColor.color, label: Text('Color (5৳)')),
+                      ButtonSegment(value: PrintColor.blackAndWhite, label: Text('B&W (3৳/pg)')),
+                      ButtonSegment(value: PrintColor.color, label: Text('Color (5৳/pg)')),
                     ],
                     selected: {color},
                     onSelectionChanged: (Set<PrintColor> newSelection) {
@@ -157,6 +214,7 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                             printColor: color,
                             paperSize: paper,
                             isDoubleSided: doubleSided,
+                            pageCount: file.pageCount, // preserve detected page count
                           );
                         });
                         Navigator.pop(ctx);
@@ -254,7 +312,12 @@ class _NewOrderScreenState extends State<NewOrderScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(f.fileName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                      const SizedBox(height: 8),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${f.pageCount} page${f.pageCount == 1 ? '' : 's'} · ৳${f.cost.toStringAsFixed(0)}',
+                                        style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 6),
                                       Row(
                                         children: [
                                           _badge('${f.copies}x'),

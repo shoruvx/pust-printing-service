@@ -23,10 +23,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -65,5 +62,14 @@ class DefaultFirebaseOptions {
     messagingSenderId: '160543732289',
     projectId: 'pust-printing-service',
     storageBucket: 'pust-printing-service.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCDWxh9QmRFFBafAdo5CwDXYr4pL3zXwYE',
+    appId: '1:160543732289:ios:70ca2a9b6aed8cab234cc0',
+    messagingSenderId: '160543732289',
+    projectId: 'pust-printing-service',
+    storageBucket: 'pust-printing-service.firebasestorage.app',
+    iosBundleId: 'com.example.pustPrintingService',
   );
 }

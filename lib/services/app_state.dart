@@ -12,6 +12,9 @@ class AppState extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _profileIncomplete = false;
+  bool get profileIncomplete => _profileIncomplete;
+
   AppUser? _currentUser;
   AppUser? get currentUser => _currentUser;
   
@@ -63,11 +66,44 @@ class AppState extends ChangeNotifier {
   Future<void> _initSession() async {
     FirebaseAuth.instance.authStateChanges().listen((User? user) async {
       if (user != null) {
-        final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-        if(doc.exists) {
-           _currentUser = AppUser.fromJson(doc.data()!);
-           await _storageService.saveSession(_currentUser!.id);
-           _loadUserData();
+        try {
+          // Try to fetch user profile from Firestore
+          final doc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+          if (doc.exists) {
+            _currentUser = AppUser.fromJson(doc.data()!);
+            await _storageService.saveUser(_currentUser!);  // cache locally for fallback
+            await _storageService.saveSession(_currentUser!.id);
+            _loadUserData();
+          } else {
+            // Doc doesn't exist yet — fall back to local cache
+            _currentUser = _storageService.getUserById(user.uid);
+            if (_currentUser != null) _loadUserData();
+          }
+        } catch (e) {
+          // Firestore permission denied or network error.
+          // Try local cache first, then fall back to building user from Firebase Auth data.
+          debugPrint('AppState: Firestore unavailable, using local cache: $e');
+          _currentUser = _storageService.getUserById(user.uid);
+          if (_currentUser == null) {
+            // Build a minimal AppUser from Firebase Auth — we always have uid + email
+            final email = user.email ?? '';
+            final rollNumber = email.replaceAll('@pust.student.bd', '');
+            _currentUser = AppUser(
+              id: user.uid,
+              fullName: user.displayName ?? rollNumber,
+              rollNumber: rollNumber,
+              registrationNumber: '',
+              phone: user.phoneNumber ?? '',
+              passwordHash: '',
+              memberSince: user.metadata.creationTime ?? DateTime.now(),
+            );
+            _profileIncomplete = true; // flag that profile fields may be missing
+          }
+          _loadUserData();
+          // Do NOT sign out — keep the user logged in with local data
         }
       } else {
         _currentUser = null;
@@ -84,6 +120,34 @@ class AppState extends ChangeNotifier {
     _orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     _notifications = _storageService.getNotifications();
     _notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  /// Retry fetching the full user profile from Firestore.
+  /// Call this from the profile screen when [profileIncomplete] is true.
+  Future<String?> syncProfile() async {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    if (firebaseUser == null) return 'Not logged in';
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .get()
+          .timeout(const Duration(seconds: 10));
+      if (doc.exists) {
+        _currentUser = AppUser.fromJson(doc.data()!);
+        await _storageService.saveUser(_currentUser!);
+        await _storageService.saveSession(_currentUser!.id);
+        _profileIncomplete = false;
+        _loadUserData();
+        notifyListeners();
+        return null; // success
+      } else {
+        return 'Profile not found in database';
+      }
+    } catch (e) {
+      debugPrint('syncProfile failed: $e');
+      return 'Could not connect to server. Check your internet or Firebase settings.';
+    }
   }
 
   // --- Auth ---
@@ -143,6 +207,9 @@ class AppState extends ChangeNotifier {
         );
         
         await FirebaseFirestore.instance.collection('users').doc(cred.user!.uid).set(firebaseUser.toJson()).timeout(const Duration(seconds: 5));
+        
+        // Also cache locally for offline/fallback use
+        await _storageService.saveUser(firebaseUser);
         
         // Log out immediately so the user can log in manually as requested
         await FirebaseAuth.instance.signOut();
